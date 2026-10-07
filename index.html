@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Botswana Economic Pulse — Live BI Dashboard</title>
+    <meta name="description" content="Live Business Intelligence dashboard tracking Botswana's economy — currency, fuel, GDP, and stock market data.">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- ============================
+         TOP NAV
+    ============================= -->
+    <header class="top-nav">
+        <div class="nav-inner">
+            <div class="brand">
+                <div class="brand-mark">🇧🇼</div>
+                <div class="brand-text">
+                    <div class="brand-title">Botswana Economic Pulse</div>
+                    <div class="brand-sub">Live Business Intelligence · Made in Gaborone</div>
+                </div>
+            </div>
+            <div class="nav-right">
+                <div class="live-badge">
+                    <span class="live-dot"></span>
+                    <span>LIVE</span>
+                </div>
+                <div class="nav-time" id="nav-time">--:--</div>
+                <a href="https://github.com" target="_blank" class="nav-icon" title="GitHub">
+                    <i class="fab fa-github"></i>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="dashboard">
+
+        <!-- ============================
+             HERO / INTRO
+        ============================= -->
+        <section class="hero-row">
+            <div>
+                <h1 class="hero-title">Botswana's economy, <em>at a glance.</em></h1>
+                <p class="hero-sub">Live indicators, trends, and insights — refreshed every morning.</p>
+            </div>
+            <div class="hero-actions">
+                <button class="btn-action" onclick="refreshData()">
+                    <i class="fas fa-rotate"></i> Refresh
+                </button>
+                <button class="btn-action btn-primary" onclick="downloadReport()">
+                    <i class="fas fa-file-arrow-down"></i> Download Report
+                </button>
+            </div>
+        </section>
+
+        <!-- ============================
+             KPI CARDS
+        ============================= -->
+        <section class="kpi-grid">
+
+            <div class="kpi-card">
+                <div class="kpi-header">
+                    <div class="kpi-label">BWP / USD</div>
+                    <div class="kpi-icon usd"><i class="fas fa-dollar-sign"></i></div>
+                </div>
+                <div class="kpi-value" id="kpi-usd">13.42</div>
+                <div class="kpi-delta negative">
+                    <i class="fas fa-arrow-down"></i>
+                    <span>0.34%</span>
+                    <span class="kpi-period">today</span>
+                </div>
+                <canvas class="kpi-spark" id="spark-usd"></canvas>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-header">
+                    <div class="kpi-label">BWP / ZAR</div>
+                    <div class="kpi-icon zar"><i class="fas fa-coins"></i></div>
+                </div>
+                <div class="kpi-value" id="kpi-zar">0.73</div>
+                <div class="kpi-delta positive">
+                    <i class="fas fa-arrow-up"></i>
+                    <span>0.21%</span>
+                    <span class="kpi-period">today</span>
+                </div>
+                <canvas class="kpi-spark" id="spark-zar"></canvas>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-header">
+                    <div class="kpi-label">Inflation Rate</div>
+                    <div class="kpi-icon inflation"><i class="fas fa-chart-line"></i></div>
+                </div>
+                <div class="kpi-value" id="kpi-inflation">3.8%</div>
+                <div class="kpi-delta positive">
+                    <i class="fas fa-arrow-down"></i>
+                    <span>0.2%</span>
+                    <span class="kpi-period">vs last month</span>
+                </div>
+                <canvas class="kpi-spark" id="spark-inflation"></canvas>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-header">
+                    <div class="kpi-label">GDP Growth</div>
+                    <div class="kpi-icon gdp"><i class="fas fa-arrow-trend-up"></i></div>
+                </div>
+                <div class="kpi-value" id="kpi-gdp">2.7%</div>
+                <div class="kpi-delta positive">
+                    <i class="fas fa-arrow-up"></i>
+                    <span>0.4%</span>
+                    <span class="kpi-period">YoY</span>
+                </div>
+                <canvas class="kpi-spark" id="spark-gdp"></canvas>
+            </div>
+
+        </section>
+
+        <!-- ============================
+             CHARTS ROW 1
+        ============================= -->
+        <section class="charts-row">
+
+            <div class="chart-card chart-large">
+                <div class="chart-header">
+                    <div>
+                        <div class="chart-title">Currency Trend</div>
+                        <div class="chart-sub">BWP vs major currencies · Last 90 days</div>
+                    </div>
+                    <div class="chart-legend">
+                        <span><i style="background:#10B981"></i> USD</span>
+                        <span><i style="background:#F59E0B"></i> ZAR</span>
+                        <span><i style="background:#3B82F6"></i> EUR</span>
+                    </div>
+                </div>
+                <div class="chart-body">
+                    <canvas id="chart-currency"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <div class="chart-header">
+                    <div>
+                        <div class="chart-title">Fuel Prices</div>
+                        <div class="chart-sub">Pula per litre · 2024</div>
+                    </div>
+                </div>
+                <div class="chart-body">
+                    <canvas id="chart-fuel"></canvas>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ============================
+             CHARTS ROW 2
+        ============================= -->
+        <section class="charts-row">
+
+            <div class="chart-card">
+                <div class="chart-header">
+                    <div>
+                        <div class="chart-title">BSE Sector Performance</div>
+                        <div class="chart-sub">Year-to-date change</div>
+                    </div>
+                </div>
+                <div class="chart-body">
+                    <canvas id="chart-bse"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-card chart-large">
+                <div class="chart-header">
+                    <div>
+                        <div class="chart-title">Botswana vs Regional Peers</div>
+                        <div class="chart-sub">GDP growth comparison · 2024</div>
+                    </div>
+                </div>
+                <div class="chart-body">
+                    <canvas id="chart-compare"></canvas>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ============================
+             INSIGHTS FEED
+        ============================= -->
+        <section class="insights-section">
+            <div class="insights-header">
+                <div>
+                    <div class="chart-title">Today's Insights</div>
+                    <div class="chart-sub">Auto-generated · Updated daily at 6:00 AM</div>
+                </div>
+                <div class="insights-badge">
+                    <i class="fas fa-robot"></i> AI-generated
+                </div>
+            </div>
+
+            <div class="insights-grid" id="insights-grid">
+                <!-- Populated by JS -->
+            </div>
+        </section>
+
+        <!-- ============================
+             FOOTER
+        ============================= -->
+        <footer class="dashboard-footer">
+            <div class="footer-left">
+                <div class="brand-mark small">🇧🇼</div>
+                <div>
+                    <div class="footer-title">Botswana Economic Pulse</div>
+                    <div class="footer-sub">Built by Theo A. G. Bida · Gaborone, Botswana</div>
+                </div>
+            </div>
+            <div class="footer-right">
+                <span class="footer-stat">
+                    <span class="dot green"></span> All systems operational
+                </span>
+                <span class="footer-stat">
+                    Last update: <span class="mono" id="last-update">Today, 06:00 CAT</span>
+                </span>
+            </div>
+        </footer>
+
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>
