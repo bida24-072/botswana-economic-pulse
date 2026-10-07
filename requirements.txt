@@ -1,0 +1,18 @@
+# ==========================================
+# Botswana Economic Pulse — Python Dependencies
+# ==========================================
+
+# Data fetching
+requests==2.31.0
+beautifulsoup4==4.12.2
+lxml==5.1.0
+
+# Data processing
+pandas==2.1.4
+
+# Database
+SQLAlchemy==2.0.25
+psycopg2-binary==2.9.9
+
+# Environment variables
+python-dotenv==1.0.0
